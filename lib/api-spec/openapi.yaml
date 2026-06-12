@@ -3,20 +3,30 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Sip of Sky Restaurant API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: menu
+    description: Menu items and categories
+  - name: orders
+    description: Food orders
+  - name: bookings
+    description: Table reservations
+  - name: reviews
+    description: Customer reviews
+  - name: restaurant
+    description: Restaurant info
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +34,356 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /restaurant:
+    get:
+      operationId: getRestaurantInfo
+      tags: [restaurant]
+      summary: Get restaurant info (name, address, hours, contact)
+      responses:
+        "200":
+          description: Restaurant info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantInfo"
+
+  /menu:
+    get:
+      operationId: listMenuItems
+      tags: [menu]
+      summary: List all menu items with optional category filter
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: featured
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Menu items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MenuItem"
+    post:
+      operationId: createMenuItem
+      tags: [menu]
+      summary: Admin - add menu item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MenuItemInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MenuItem"
+
+  /menu/{id}:
+    get:
+      operationId: getMenuItem
+      tags: [menu]
+      summary: Get single menu item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Menu item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MenuItem"
+    patch:
+      operationId: updateMenuItem
+      tags: [menu]
+      summary: Admin - update menu item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MenuItemUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MenuItem"
+    delete:
+      operationId: deleteMenuItem
+      tags: [menu]
+      summary: Admin - delete menu item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /menu/categories:
+    get:
+      operationId: listCategories
+      tags: [menu]
+      summary: List distinct menu categories
+      responses:
+        "200":
+          description: Categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /menu/featured:
+    get:
+      operationId: getFeaturedDishes
+      tags: [menu]
+      summary: Get top-rated featured dishes for the home page
+      responses:
+        "200":
+          description: Featured dishes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MenuItem"
+
+  /orders:
+    get:
+      operationId: listOrders
+      tags: [orders]
+      summary: Admin - list all orders
+      responses:
+        "200":
+          description: Orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+    post:
+      operationId: createOrder
+      tags: [orders]
+      summary: Place a new food order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderInput"
+      responses:
+        "201":
+          description: Order placed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/{id}:
+    get:
+      operationId: getOrder
+      tags: [orders]
+      summary: Get order by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+    patch:
+      operationId: updateOrderStatus
+      tags: [orders]
+      summary: Admin - update order status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderStatusUpdate"
+      responses:
+        "200":
+          description: Updated order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /orders/stats:
+    get:
+      operationId: getOrderStats
+      tags: [orders]
+      summary: Admin - order stats (total, revenue, by status)
+      responses:
+        "200":
+          description: Order statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderStats"
+
+  /bookings:
+    get:
+      operationId: listBookings
+      tags: [bookings]
+      summary: Admin - list all table bookings
+      responses:
+        "200":
+          description: Bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+    post:
+      operationId: createBooking
+      tags: [bookings]
+      summary: Reserve a table
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingInput"
+      responses:
+        "201":
+          description: Booking confirmed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+
+  /bookings/{id}:
+    get:
+      operationId: getBooking
+      tags: [bookings]
+      summary: Get booking by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Booking
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+    patch:
+      operationId: updateBookingStatus
+      tags: [bookings]
+      summary: Admin - confirm or cancel booking
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingStatusUpdate"
+      responses:
+        "200":
+          description: Updated booking
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+
+  /reviews:
+    get:
+      operationId: listReviews
+      tags: [reviews]
+      summary: List approved reviews
+      responses:
+        "200":
+          description: Reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
+    post:
+      operationId: submitReview
+      tags: [reviews]
+      summary: Submit a customer review
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewInput"
+      responses:
+        "201":
+          description: Review submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
+
+  /reviews/summary:
+    get:
+      operationId: getReviewSummary
+      tags: [reviews]
+      summary: Get average rating and review count for home page
+      responses:
+        "200":
+          description: Review summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReviewSummary"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +394,369 @@ components:
       required:
         - status
 
+    RestaurantInfo:
+      type: object
+      properties:
+        name:
+          type: string
+        tagline:
+          type: string
+        address:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        openTime:
+          type: string
+        closeTime:
+          type: string
+        mapEmbedUrl:
+          type: string
+        heroImageUrl:
+          type: string
+        isOpenNow:
+          type: boolean
+      required:
+        - name
+        - tagline
+        - address
+        - phone
+        - email
+        - openTime
+        - closeTime
+        - isOpenNow
+
+    MenuItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        category:
+          type: string
+        imageUrl:
+          type: ["string", "null"]
+        rating:
+          type: number
+        isVegetarian:
+          type: boolean
+        isSpicy:
+          type: boolean
+        isFeatured:
+          type: boolean
+        available:
+          type: boolean
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - description
+        - price
+        - category
+        - rating
+        - isVegetarian
+        - isSpicy
+        - isFeatured
+        - available
+        - createdAt
+
+    MenuItemInput:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        category:
+          type: string
+        imageUrl:
+          type: string
+        isVegetarian:
+          type: boolean
+        isSpicy:
+          type: boolean
+        isFeatured:
+          type: boolean
+        available:
+          type: boolean
+      required:
+        - name
+        - description
+        - price
+        - category
+
+    MenuItemUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        category:
+          type: string
+        imageUrl:
+          type: string
+        isVegetarian:
+          type: boolean
+        isSpicy:
+          type: boolean
+        isFeatured:
+          type: boolean
+        available:
+          type: boolean
+
+    OrderItem:
+      type: object
+      properties:
+        menuItemId:
+          type: integer
+        name:
+          type: string
+        price:
+          type: number
+        quantity:
+          type: integer
+      required:
+        - menuItemId
+        - name
+        - price
+        - quantity
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+        customerPhone:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+        totalAmount:
+          type: number
+        status:
+          type: string
+          enum: [pending, confirmed, preparing, ready, delivered, cancelled]
+        specialInstructions:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required:
+        - id
+        - customerName
+        - customerEmail
+        - customerPhone
+        - items
+        - totalAmount
+        - status
+        - createdAt
+
+    OrderInput:
+      type: object
+      properties:
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+        customerPhone:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+        totalAmount:
+          type: number
+        specialInstructions:
+          type: string
+      required:
+        - customerName
+        - customerEmail
+        - customerPhone
+        - items
+        - totalAmount
+
+    OrderStatusUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [pending, confirmed, preparing, ready, delivered, cancelled]
+      required:
+        - status
+
+    OrderStats:
+      type: object
+      properties:
+        totalOrders:
+          type: integer
+        totalRevenue:
+          type: number
+        pendingOrders:
+          type: integer
+        confirmedOrders:
+          type: integer
+        preparingOrders:
+          type: integer
+        readyOrders:
+          type: integer
+        deliveredOrders:
+          type: integer
+        cancelledOrders:
+          type: integer
+      required:
+        - totalOrders
+        - totalRevenue
+        - pendingOrders
+        - confirmedOrders
+        - preparingOrders
+        - readyOrders
+        - deliveredOrders
+        - cancelledOrders
+
+    Booking:
+      type: object
+      properties:
+        id:
+          type: integer
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+        customerPhone:
+          type: string
+        date:
+          type: string
+        time:
+          type: string
+        partySize:
+          type: integer
+        specialRequests:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [pending, confirmed, cancelled]
+        createdAt:
+          type: string
+      required:
+        - id
+        - customerName
+        - customerEmail
+        - customerPhone
+        - date
+        - time
+        - partySize
+        - status
+        - createdAt
+
+    BookingInput:
+      type: object
+      properties:
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+        customerPhone:
+          type: string
+        date:
+          type: string
+        time:
+          type: string
+        partySize:
+          type: integer
+        specialRequests:
+          type: string
+      required:
+        - customerName
+        - customerEmail
+        - customerPhone
+        - date
+        - time
+        - partySize
+
+    BookingStatusUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [pending, confirmed, cancelled]
+      required:
+        - status
+
+    Review:
+      type: object
+      properties:
+        id:
+          type: integer
+        customerName:
+          type: string
+        rating:
+          type: integer
+        comment:
+          type: string
+        approved:
+          type: boolean
+        createdAt:
+          type: string
+      required:
+        - id
+        - customerName
+        - rating
+        - comment
+        - approved
+        - createdAt
+
+    ReviewInput:
+      type: object
+      properties:
+        customerName:
+          type: string
+        rating:
+          type: integer
+        comment:
+          type: string
+      required:
+        - customerName
+        - rating
+        - comment
+
+    ReviewSummary:
+      type: object
+      properties:
+        averageRating:
+          type: number
+        totalReviews:
+          type: integer
+        fiveStarCount:
+          type: integer
+        fourStarCount:
+          type: integer
+        threeStarCount:
+          type: integer
+        twoStarCount:
+          type: integer
+        oneStarCount:
+          type: integer
+      required:
+        - averageRating
+        - totalReviews
+        - fiveStarCount
+        - fourStarCount
+        - threeStarCount
+        - twoStarCount
+        - oneStarCount
