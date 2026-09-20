@@ -38,10 +38,10 @@ router.get("/menu", async (req, res) => {
       rating: Number(item.rating),
       createdAt: item.createdAt.toISOString(),
     }));
-    res.json(result);
+    return res.json(result);
   } catch (err) {
     req.log.error({ err }, "Failed to list menu items");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -63,10 +63,10 @@ router.post("/menu", async (req, res) => {
       isFeatured: body.isFeatured ?? false,
       available: body.available ?? true,
     }).returning();
-    res.status(201).json({ ...item, price: Number(item.price), rating: Number(item.rating), createdAt: item.createdAt.toISOString() });
+    return res.status(201).json({ ...item, price: Number(item.price), rating: Number(item.rating), createdAt: item.createdAt.toISOString() });
   } catch (err) {
     req.log.error({ err }, "Failed to create menu item");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -74,10 +74,10 @@ router.get("/menu/categories", async (req, res) => {
   try {
     const items = await db.select({ category: menuItemsTable.category }).from(menuItemsTable);
     const categories = [...new Set(items.map((i) => i.category))].sort();
-    res.json(categories);
+    return res.json(categories);
   } catch (err) {
     req.log.error({ err }, "Failed to list categories");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -93,10 +93,10 @@ router.get("/menu/featured", async (req, res) => {
         rating: Number(item.rating),
         createdAt: item.createdAt.toISOString(),
       }));
-    res.json(featured);
+    return res.json(featured);
   } catch (err) {
     req.log.error({ err }, "Failed to get featured dishes");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -107,10 +107,10 @@ router.get("/menu/:id", async (req, res) => {
     const rows = await db.select().from(menuItemsTable).where(eq(menuItemsTable.id, params.data.id));
     if (rows.length === 0) return res.status(404).json({ error: "Not found" });
     const item = rows[0];
-    res.json({ ...item, price: Number(item.price), rating: Number(item.rating), createdAt: item.createdAt.toISOString() });
+    return res.json({ ...item, price: Number(item.price), rating: Number(item.rating), createdAt: item.createdAt.toISOString() });
   } catch (err) {
     req.log.error({ err }, "Failed to get menu item");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -133,10 +133,10 @@ router.patch("/menu/:id", async (req, res) => {
     if (body.available !== undefined) updates.available = body.available;
     const [item] = await db.update(menuItemsTable).set(updates).where(eq(menuItemsTable.id, params.data.id)).returning();
     if (!item) return res.status(404).json({ error: "Not found" });
-    res.json({ ...item, price: Number(item.price), rating: Number(item.rating), createdAt: item.createdAt.toISOString() });
+    return res.json({ ...item, price: Number(item.price), rating: Number(item.rating), createdAt: item.createdAt.toISOString() });
   } catch (err) {
     req.log.error({ err }, "Failed to update menu item");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -145,10 +145,10 @@ router.delete("/menu/:id", async (req, res) => {
     const params = DeleteMenuItemParams.safeParse({ id: Number(req.params.id) });
     if (!params.success) return res.status(400).json({ error: "Invalid id" });
     await db.delete(menuItemsTable).where(eq(menuItemsTable.id, params.data.id));
-    res.status(204).send();
+    return res.status(204).send();
   } catch (err) {
     req.log.error({ err }, "Failed to delete menu item");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 

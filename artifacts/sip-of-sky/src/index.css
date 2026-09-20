@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
@@ -74,46 +74,46 @@
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
 
-  /* Light Mode - Warm & Airy - Sand/Cream */
-  --background: 40 33% 98%;
-  --foreground: 220 10% 20%;
-  --card: 40 33% 98%;
-  --card-foreground: 220 10% 20%;
-  --card-border: 40 10% 90%;
-  --popover: 40 33% 98%;
-  --popover-foreground: 220 10% 20%;
-  --popover-border: 40 10% 90%;
-  --primary: 35 90% 55%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 40 15% 90%;
-  --secondary-foreground: 220 10% 20%;
-  --muted: 40 15% 90%;
-  --muted-foreground: 220 5% 45%;
-  --accent: 40 15% 90%;
-  --accent-foreground: 220 10% 20%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 40 10% 90%;
-  --input: 40 10% 90%;
-  --ring: 35 90% 55%;
-  --chart-1: 35 90% 55%;
-  --chart-2: 160 60% 45%;
-  --chart-3: 220 70% 50%;
-  --chart-4: 280 65% 60%;
-  --chart-5: 340 75% 55%;
-  --sidebar: 40 33% 96%;
-  --sidebar-foreground: 220 10% 20%;
-  --sidebar-border: 40 10% 88%;
-  --sidebar-primary: 35 90% 55%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 40 15% 90%;
-  --sidebar-accent-foreground: 220 10% 20%;
-  --sidebar-ring: 35 90% 55%;
+  /* KEEP DIVING — candlelight, deep ink, saffron and garden green */
+  --background: 41 42% 93%;
+  --foreground: 174 25% 13%;
+  --card: 42 45% 96%;
+  --card-foreground: 174 25% 13%;
+  --card-border: 39 25% 83%;
+  --popover: 42 45% 96%;
+  --popover-foreground: 174 25% 13%;
+  --popover-border: 39 25% 83%;
+  --primary: 34 89% 47%;
+  --primary-foreground: 174 25% 10%;
+  --secondary: 162 28% 30%;
+  --secondary-foreground: 42 45% 96%;
+  --muted: 38 24% 87%;
+  --muted-foreground: 176 11% 38%;
+  --accent: 74 28% 39%;
+  --accent-foreground: 42 45% 96%;
+  --destructive: 3 64% 43%;
+  --destructive-foreground: 42 45% 96%;
+  --border: 39 25% 83%;
+  --input: 39 25% 78%;
+  --ring: 34 89% 47%;
+  --chart-1: 34 89% 47%;
+  --chart-2: 162 28% 30%;
+  --chart-3: 74 28% 39%;
+  --chart-4: 3 64% 43%;
+  --chart-5: 39 75% 63%;
+  --sidebar: 174 25% 13%;
+  --sidebar-foreground: 42 45% 96%;
+  --sidebar-border: 174 20% 24%;
+  --sidebar-primary: 34 89% 47%;
+  --sidebar-primary-foreground: 174 25% 10%;
+  --sidebar-accent: 162 28% 30%;
+  --sidebar-accent-foreground: 42 45% 96%;
+  --sidebar-ring: 34 89% 47%;
 
-  --app-font-sans: 'Inter', sans-serif;
-  --app-font-serif: 'Playfair Display', serif;
-  --app-font-mono: Menlo, monospace;
-  --radius: 0.5rem;
+  --app-font-sans: 'Manrope', sans-serif;
+  --app-font-serif: 'Instrument Serif', serif;
+  --app-font-mono: 'Space Mono', monospace;
+  --radius: 0.85rem;
 
   --shadow-2xs: 0px 1px 2px 0px rgba(0,0,0,0.04);
   --shadow-xs: 0px 1px 3px 0px rgba(0,0,0,0.08);
@@ -143,41 +143,41 @@
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
 
-  /* Dark Mode - Candlelit Rooftop at Midnight */
-  --background: 230 25% 10%;
-  --foreground: 40 20% 90%;
-  --card: 230 25% 12%;
-  --card-foreground: 40 20% 90%;
-  --card-border: 230 20% 18%;
-  --popover: 230 25% 12%;
-  --popover-foreground: 40 20% 90%;
-  --popover-border: 230 20% 18%;
-  --primary: 35 90% 55%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 230 20% 18%;
-  --secondary-foreground: 40 20% 90%;
-  --muted: 230 20% 18%;
-  --muted-foreground: 230 10% 65%;
-  --accent: 230 20% 18%;
-  --accent-foreground: 40 20% 90%;
-  --destructive: 0 62% 50%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 230 20% 18%;
-  --input: 230 20% 22%;
-  --ring: 35 90% 55%;
-  --chart-1: 35 90% 55%;
-  --chart-2: 160 60% 45%;
-  --chart-3: 220 70% 60%;
-  --chart-4: 280 65% 65%;
-  --chart-5: 340 75% 60%;
-  --sidebar: 230 25% 8%;
-  --sidebar-foreground: 40 20% 90%;
-  --sidebar-border: 230 20% 18%;
-  --sidebar-primary: 35 90% 55%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 230 20% 18%;
-  --sidebar-accent-foreground: 40 20% 90%;
-  --sidebar-ring: 35 90% 55%;
+  /* Dark mode — the room after the sun has gone down */
+  --background: 174 25% 9%;
+  --foreground: 42 45% 93%;
+  --card: 174 22% 13%;
+  --card-foreground: 42 45% 93%;
+  --card-border: 174 18% 23%;
+  --popover: 174 22% 13%;
+  --popover-foreground: 42 45% 93%;
+  --popover-border: 174 18% 23%;
+  --primary: 38 89% 57%;
+  --primary-foreground: 174 25% 10%;
+  --secondary: 162 28% 30%;
+  --secondary-foreground: 42 45% 96%;
+  --muted: 174 18% 19%;
+  --muted-foreground: 42 20% 70%;
+  --accent: 74 28% 39%;
+  --accent-foreground: 42 45% 96%;
+  --destructive: 3 64% 52%;
+  --destructive-foreground: 42 45% 96%;
+  --border: 174 18% 23%;
+  --input: 174 18% 27%;
+  --ring: 38 89% 57%;
+  --chart-1: 38 89% 57%;
+  --chart-2: 162 28% 39%;
+  --chart-3: 74 28% 45%;
+  --chart-4: 3 64% 52%;
+  --chart-5: 39 75% 63%;
+  --sidebar: 174 25% 7%;
+  --sidebar-foreground: 42 45% 93%;
+  --sidebar-border: 174 18% 20%;
+  --sidebar-primary: 38 89% 57%;
+  --sidebar-primary-foreground: 174 25% 10%;
+  --sidebar-accent: 162 28% 30%;
+  --sidebar-accent-foreground: 42 45% 96%;
+  --sidebar-ring: 38 89% 57%;
 
   --shadow-2xs: 0px 1px 2px 0px rgba(0,0,0,0.20);
   --shadow-xs: 0px 1px 3px 0px rgba(0,0,0,0.30);
@@ -206,8 +206,18 @@
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--app-font-serif);
+    letter-spacing: -0.02em;
   }
+  ::selection { background: hsl(var(--primary) / .28); color: hsl(var(--foreground)); }
+  body { background-image: radial-gradient(hsl(var(--foreground) / .035) 1px, transparent 1px); background-size: 18px 18px; }
 }
+
+@keyframes rise-in { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes float-soft { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+.animate-rise-in { animation: rise-in .65s cubic-bezier(.2,.8,.2,1) both; }
+.animate-float-soft { animation: float-soft 5s ease-in-out infinite; }
+.eyebrow { font-family: var(--app-font-mono); font-size: .68rem; letter-spacing: .16em; text-transform: uppercase; color: hsl(var(--primary)); }
+.ink-panel { background: hsl(var(--secondary)); color: hsl(var(--secondary-foreground)); }
 
 @layer utilities {
   input[type="search"]::-webkit-search-cancel-button {

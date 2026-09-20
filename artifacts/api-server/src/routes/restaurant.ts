@@ -23,10 +23,10 @@ router.get("/restaurant", async (req, res) => {
     const closeMinutes = closeH * 60 + closeM;
     const isOpenNow = currentMinutes >= openMinutes && currentMinutes < closeMinutes;
 
-    res.json({ ...info, isOpenNow });
+    return res.json({ ...info, isOpenNow });
   } catch (err) {
     req.log.error({ err }, "Failed to get restaurant info");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 

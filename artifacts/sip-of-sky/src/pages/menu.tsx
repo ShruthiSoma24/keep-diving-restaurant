@@ -11,6 +11,7 @@ import {
   Search, SlidersHorizontal, Leaf, Flame, ShoppingCart, Plus, Minus, Trash2, Star, ChevronRight
 } from "lucide-react";
 import { Link } from "wouter";
+import { formatINR } from "@/lib/keep-diving";
 
 function MenuItemCard({ item }: { item: {
   id: number; name: string; description: string; price: number; category: string;
@@ -77,7 +78,7 @@ function MenuItemCard({ item }: { item: {
         <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2 mb-4 flex-1">{item.description}</p>
 
         <div className="flex items-center justify-between">
-          <span className="text-xl font-bold text-primary">${item.price.toFixed(2)}</span>
+           <span className="text-xl font-bold text-primary">{formatINR(item.price)}</span>
 
           {item.available && (
             qty === 0 ? (
@@ -152,7 +153,7 @@ function CartDrawer() {
                 <div key={item.menuItemId} className="flex items-center gap-3 p-3 bg-muted/40 rounded-xl">
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm truncate">{item.name}</p>
-                    <p className="text-primary text-sm font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
+                     <p className="text-primary text-sm font-semibold">{formatINR(item.price * item.quantity)}</p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <Button size="icon" variant="outline" className="h-7 w-7 rounded-full"
@@ -171,7 +172,7 @@ function CartDrawer() {
             <div className="border-t pt-4 space-y-4">
               <div className="flex justify-between items-center text-lg font-semibold">
                 <span>Total</span>
-                <span className="text-primary">${totalPrice.toFixed(2)}</span>
+                 <span className="text-primary">{formatINR(totalPrice)}</span>
               </div>
               <Link href="/order">
                 <Button className="w-full rounded-full gap-2 text-base py-5">
@@ -193,8 +194,8 @@ export default function Menu() {
   const [vegOnly, setVegOnly] = useState(false);
   const [spicyOnly, setSpicyOnly] = useState(false);
 
-  const { data: categories = [], isLoading: isLoadingCats } = useListCategories();
-  const { data: allItems = [], isLoading: isLoadingItems } = useListMenuItems();
+  const { data: categories = [], isLoading: isLoadingCats, isError: categoriesError } = useListCategories();
+  const { data: allItems = [], isLoading: isLoadingItems, isError: itemsError, refetch } = useListMenuItems();
   const { data: featuredDishes = [] } = useGetFeaturedDishes();
   const { totalItems, totalPrice } = useCart();
 
@@ -211,6 +212,7 @@ export default function Menu() {
   }, [allItems, activeCategory, search, vegOnly, spicyOnly]);
 
   const isLoading = isLoadingItems || isLoadingCats;
+  const hasError = categoriesError || itemsError;
 
   return (
     <div className="min-h-screen bg-background">
@@ -234,7 +236,7 @@ export default function Menu() {
                 <div key={dish.id} className="flex items-center gap-2 shrink-0">
                   <Star className="h-3.5 w-3.5 fill-primary text-primary" />
                   <span className="text-sm font-medium">{dish.name}</span>
-                  <span className="text-sm text-primary font-semibold">${dish.price.toFixed(2)}</span>
+                   <span className="text-sm text-primary font-semibold">{formatINR(dish.price)}</span>
                 </div>
               ))}
             </div>
@@ -293,7 +295,13 @@ export default function Menu() {
         </div>
 
         {/* Items Grid */}
-        {isLoading ? (
+        {hasError ? (
+          <div className="rounded-2xl border border-destructive/20 bg-destructive/5 px-6 py-16 text-center">
+            <p className="font-serif text-2xl">The menu is taking a moment.</p>
+            <p className="mt-2 text-sm text-muted-foreground">Please try again — the kitchen is still here.</p>
+            <Button variant="outline" className="mt-5 rounded-full" onClick={() => refetch()}>Try again</Button>
+          </div>
+        ) : isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="space-y-3">
@@ -337,7 +345,7 @@ export default function Menu() {
             <div className="bg-card border border-card-border rounded-2xl shadow-2xl px-5 py-3 flex items-center gap-6">
               <div>
                 <p className="text-xs text-muted-foreground">{totalItems} item{totalItems !== 1 ? "s" : ""}</p>
-                <p className="font-bold text-primary">${totalPrice.toFixed(2)}</p>
+                 <p className="font-bold text-primary">{formatINR(totalPrice)}</p>
               </div>
               <CartDrawer />
             </div>

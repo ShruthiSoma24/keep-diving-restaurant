@@ -23,10 +23,10 @@ function formatOrder(order: typeof ordersTable.$inferSelect) {
 router.get("/orders", async (req, res) => {
   try {
     const orders = await db.select().from(ordersTable).orderBy(ordersTable.createdAt);
-    res.json(orders.map(formatOrder).reverse());
+    return res.json(orders.map(formatOrder).reverse());
   } catch (err) {
     req.log.error({ err }, "Failed to list orders");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -46,10 +46,10 @@ router.post("/orders", async (req, res) => {
       status: "pending",
       specialInstructions: body.specialInstructions ?? null,
     }).returning();
-    res.status(201).json(formatOrder(order));
+    return res.status(201).json(formatOrder(order));
   } catch (err) {
     req.log.error({ err }, "Failed to create order");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -66,10 +66,10 @@ router.get("/orders/stats", async (req, res) => {
       deliveredOrders: orders.filter(o => o.status === "delivered").length,
       cancelledOrders: orders.filter(o => o.status === "cancelled").length,
     };
-    res.json(stats);
+    return res.json(stats);
   } catch (err) {
     req.log.error({ err }, "Failed to get order stats");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -79,10 +79,10 @@ router.get("/orders/:id", async (req, res) => {
     if (!params.success) return res.status(400).json({ error: "Invalid id" });
     const rows = await db.select().from(ordersTable).where(eq(ordersTable.id, params.data.id));
     if (rows.length === 0) return res.status(404).json({ error: "Not found" });
-    res.json(formatOrder(rows[0]));
+    return res.json(formatOrder(rows[0]));
   } catch (err) {
     req.log.error({ err }, "Failed to get order");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -94,10 +94,10 @@ router.patch("/orders/:id", async (req, res) => {
     if (!parsed.success) return res.status(400).json({ error: parsed.error.message });
     const [order] = await db.update(ordersTable).set({ status: parsed.data.status }).where(eq(ordersTable.id, params.data.id)).returning();
     if (!order) return res.status(404).json({ error: "Not found" });
-    res.json(formatOrder(order));
+    return res.json(formatOrder(order));
   } catch (err) {
     req.log.error({ err }, "Failed to update order status");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 

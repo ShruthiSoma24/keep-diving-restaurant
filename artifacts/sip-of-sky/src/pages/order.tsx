@@ -16,6 +16,7 @@ import {
   User, Mail, Phone, FileText, ArrowLeft, UtensilsCrossed
 } from "lucide-react";
 import { toast } from "sonner";
+import { formatINR } from "@/lib/keep-diving";
 
 const checkoutSchema = z.object({
   customerName: z.string().min(2, "Name must be at least 2 characters"),
@@ -56,12 +57,12 @@ function ConfirmationScreen({ orderId, customerName, totalPrice, items }: {
           {items.map(item => (
             <div key={item.name} className="flex justify-between text-sm">
               <span className="text-muted-foreground">{item.name} × {item.quantity}</span>
-              <span className="font-medium">${(item.price * item.quantity).toFixed(2)}</span>
+               <span className="font-medium">{formatINR(item.price * item.quantity)}</span>
             </div>
           ))}
           <div className="border-t pt-3 flex justify-between font-bold">
             <span>Total</span>
-            <span className="text-primary">${totalPrice.toFixed(2)}</span>
+           <span className="text-primary">{formatINR(totalPrice)}</span>
           </div>
         </div>
 
@@ -181,7 +182,7 @@ export default function Order() {
                     >
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">{item.name}</p>
-                        <p className="text-xs text-muted-foreground">${item.price.toFixed(2)} each</p>
+                     <p className="text-xs text-muted-foreground">{formatINR(item.price)} each</p>
                       </div>
                       <div className="flex items-center gap-1.5 shrink-0">
                         <button
@@ -198,7 +199,7 @@ export default function Order() {
                           <Plus className="h-3 w-3" />
                         </button>
                       </div>
-                      <span className="text-sm font-semibold w-16 text-right shrink-0">${(item.price * item.quantity).toFixed(2)}</span>
+                       <span className="text-sm font-semibold w-16 text-right shrink-0">{formatINR(item.price * item.quantity)}</span>
                     </motion.div>
                   ))}
                 </AnimatePresence>
@@ -206,11 +207,11 @@ export default function Order() {
               <div className="border-t pt-4 space-y-2">
                 <div className="flex justify-between text-sm text-muted-foreground">
                   <span>Subtotal ({totalItems} items)</span>
-                  <span>${totalPrice.toFixed(2)}</span>
+                   <span>{formatINR(totalPrice)}</span>
                 </div>
                 <div className="flex justify-between font-bold text-lg">
                   <span>Total</span>
-                  <span className="text-primary">${totalPrice.toFixed(2)}</span>
+                   <span className="text-primary">{formatINR(totalPrice)}</span>
                 </div>
               </div>
             </div>
@@ -272,7 +273,7 @@ export default function Order() {
                   </span>
                 ) : (
                   <>
-                    Place Order — ${totalPrice.toFixed(2)}
+                     Place Order — {formatINR(totalPrice)}
                     <ChevronRight className="h-4 w-4" />
                   </>
                 )}

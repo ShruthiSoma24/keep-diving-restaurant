@@ -1,0 +1,1097 @@
+You are modifying an EXISTING restaurant website hosted in this Replit project.
+
+IMPORTANT:
+Do NOT rebuild the project from scratch.
+First inspect the existing codebase, architecture, components, routes, database, styling and current functionality.
+
+Preserve the existing Keep Diving / Sky Sip visual identity where appropriate, but transform the website into a polished, interactive restaurant table reservation and food-ordering platform.
+
+The goal is to make this feel like a real premium Indian restaurant website, not a generic template.
+
+==================================================
+PROJECT GOAL
+============
+
+Transform the existing website into:
+
+KEEP DIVING
+
+A modern restaurant discovery, table reservation and food-ordering experience.
+
+Customers should be able to:
+
+* Explore the restaurant
+* View the menu
+* See dishes and prices in Indian Rupees
+* Explore chef profiles
+* Select date and time
+* Select the number of guests
+* Visually choose a table
+* Reserve a table in advance
+* Add dishes to their reservation
+* Place a food order
+* Receive a reservation confirmation
+* View upcoming reservations
+* Modify/cancel reservations
+* Interact with an inbuilt restaurant assistant chatbot
+
+The entire experience should be responsive and work beautifully on desktop, tablet and mobile.
+
+==================================================
+
+1. FIRST: INSPECT THE EXISTING PROJECT
+   ==================================================
+
+Before changing anything:
+
+1. Inspect package.json
+2. Identify frontend framework
+3. Identify backend
+4. Identify database
+5. Identify routing
+6. Identify authentication
+7. Identify existing components
+8. Identify current homepage
+9. Identify existing menu functionality
+10. Identify existing reservation/order functionality
+11. Identify existing images/assets
+12. Identify current styling system
+
+Do not unnecessarily replace technologies that are already working.
+
+Reuse existing components when practical.
+
+Preserve working functionality.
+
+Then create a short internal implementation plan and execute it.
+
+==================================================
+2. RESTAURANT BRAND
+===================
+
+Restaurant name:
+
+KEEP DIVING
+
+Create a refined restaurant identity.
+
+Tagline:
+
+"Dive Into Exceptional Flavours."
+
+Tone:
+
+* Premium
+* Warm
+* Contemporary
+* Indian-inspired
+* Sophisticated
+* Welcoming
+
+Do not make the website look like a generic food-delivery app.
+
+It should feel like a premium restaurant experience.
+
+==================================================
+3. HOMEPAGE
+===========
+
+Create an immersive restaurant homepage.
+
+Hero:
+
+KEEP DIVING
+
+"Dive Into Exceptional Flavours."
+
+Supporting text:
+
+"Reserve your table, explore our menu and make your dining experience memorable."
+
+Primary CTA:
+
+"Reserve a Table"
+
+Secondary CTA:
+
+"Explore Menu"
+
+Hero imagery should show an elegant restaurant dining environment / Indian cuisine.
+
+Use high-quality relevant images.
+
+Do not use random unrelated stock images.
+
+==================================================
+4. MAIN NAVIGATION
+==================
+
+Navigation:
+
+KEEP DIVING
+
+* Home
+* Menu
+* Reserve a Table
+* Chefs
+* Our Story
+* Contact
+
+Right side:
+
+* My Reservations
+* Cart
+* Profile
+
+Mobile navigation should be highly usable.
+
+Use a mobile bottom navigation or elegant hamburger menu where appropriate.
+
+==================================================
+5. TABLE RESERVATION — CORE FEATURE
+===================================
+
+Create a complete reservation system.
+
+Reservation flow:
+
+STEP 1
+Select date
+
+STEP 2
+Select time
+
+STEP 3
+Select number of guests
+
+STEP 4
+Select table
+
+STEP 5
+Add food
+
+STEP 6
+Confirm reservation
+
+==================================================
+6. DATE & TIME
+==============
+
+Reservation form:
+
+Date
+Number of guests
+Preferred time
+
+Example time slots:
+
+12:00 PM
+12:30 PM
+1:00 PM
+1:30 PM
+2:00 PM
+
+Dinner:
+
+7:00 PM
+7:30 PM
+8:00 PM
+8:30 PM
+9:00 PM
+9:30 PM
+
+Availability should be based on demo database data.
+
+Do not simply display fake availability without state management.
+
+==================================================
+7. INTERACTIVE TABLE MAP
+========================
+
+This should be one of the signature UI features.
+
+Create a visual restaurant floor plan.
+
+Show tables as interactive elements.
+
+Example:
+
+```
+    WINDOW
+```
+
+┌─────────────────────┐
+
+○ T01        ○ T02
+
+○ T03        ○ T04
+
+```
+  ┌──────────┐
+  │  T05     │
+  └──────────┘
+```
+
+○ T06        ○ T07
+
+```
+   BAR / LOUNGE
+```
+
+└─────────────────────┘
+
+Tables should have states:
+
+AVAILABLE
+SELECTED
+OCCUPIED
+RESERVED
+
+Use clear visual indicators.
+
+When the user selects a table:
+
+Show:
+
+Table T05
+4 seats
+Window-side
+Available
+
+CTA:
+
+"Select This Table"
+
+When selected, animate the table subtly.
+
+==================================================
+8. TABLE TYPES
+==============
+
+Create several table experiences:
+
+Window Table
+2 guests
+
+Couple Table
+2 guests
+
+Family Table
+4 guests
+
+Large Family Table
+6 guests
+
+Premium Table
+8 guests
+
+Private Dining
+10 guests
+
+Each table can have a short description.
+
+==================================================
+9. RESERVATION SUMMARY
+======================
+
+After selecting:
+
+Date
+Time
+Guests
+Table
+
+Show a sticky reservation summary.
+
+Example:
+
+YOUR RESERVATION
+
+Saturday, 26 September
+
+8:00 PM
+
+4 Guests
+
+Table T05
+
+Window-side
+
+Estimated dining time:
+90 minutes
+
+CTA:
+
+"Continue to Menu"
+
+==================================================
+10. INDIAN MENU
+===============
+
+Create a beautiful Indian restaurant menu.
+
+All prices must be displayed in ₹.
+
+Use realistic Indian restaurant pricing.
+
+Categories:
+
+STARTERS
+
+* Paneer Tikka — ₹320
+* Tandoori Chicken — ₹420
+* Malai Broccoli — ₹290
+* Dahi Kebab — ₹280
+* Amritsari Fish — ₹390
+* Chicken Seekh Kebab — ₹360
+
+NORTH INDIAN MAINS
+
+* Butter Chicken — ₹480
+* Chicken Tikka Masala — ₹460
+* Dal Makhani — ₹320
+* Paneer Lababdar — ₹390
+* Rogan Josh — ₹520
+* Kadhai Paneer — ₹380
+
+BIRYANI
+
+* Hyderabadi Chicken Biryani — ₹450
+* Mutton Biryani — ₹520
+* Vegetable Dum Biryani — ₹360
+
+BREADS
+
+* Butter Naan — ₹90
+* Garlic Naan — ₹120
+* Tandoori Roti — ₹60
+* Laccha Paratha — ₹110
+
+RICE
+
+* Jeera Rice — ₹180
+* Saffron Rice — ₹240
+
+DESSERTS
+
+* Gulab Jamun — ₹160
+* Rasmalai — ₹180
+* Gajar Halwa — ₹190
+* Kesar Kulfi — ₹170
+* Chocolate Gulab Jamun — ₹210
+
+BEVERAGES
+
+* Masala Chai — ₹100
+* Cutting Chai — ₹70
+* Mango Lassi — ₹160
+* Sweet Lassi — ₹140
+* Fresh Lime Soda — ₹130
+* Kokum Cooler — ₹170
+
+IMPORTANT:
+
+Treat these as demo menu prices.
+
+Create the menu as database-backed data rather than hardcoding everything into individual UI components.
+
+==================================================
+11. MENU UI
+===========
+
+Each dish card should contain:
+
+Food image
+Dish name
+Short description
+Price
+Vegetarian/non-vegetarian indicator
+Spice level
+Chef recommendation badge where applicable
+
+Buttons:
+
+"Add to Order"
+
+and quantity controls.
+
+Create filters:
+
+Vegetarian
+Non-Vegetarian
+Spicy
+Chef's Special
+Popular
+
+Create search:
+
+"Search dishes..."
+
+==================================================
+12. FOOD ORDERING
+=================
+
+Users should be able to add food while making a reservation.
+
+Cart should show:
+
+Dish
+Quantity
+Price
+Subtotal
+
+Restaurant taxes/fees if configured
+
+Total
+
+CTA:
+
+"Add to Reservation"
+
+OR
+
+"Order Now"
+
+Allow users to order food:
+
+* During reservation
+* From the Menu page
+* From their reservation dashboard
+
+==================================================
+13. PRE-ORDER EXPERIENCE
+========================
+
+Add a special feature:
+
+"Pre-Order Your Meal"
+
+After selecting a reservation, show:
+
+"Would you like your food ready when you arrive?"
+
+Options:
+
+Prepare upon arrival
+Prepare 15 minutes after arrival
+Prepare 30 minutes after arrival
+
+This should be stored with the reservation/order.
+
+==================================================
+14. CHEF PROFILES
+=================
+
+Create a dedicated:
+
+"Our Chefs"
+
+section.
+
+Use fictional/demo chef identities unless actual chef information already exists in the project.
+
+Example:
+
+Chef Aarav Mehta
+Executive Chef
+
+"Known for modern interpretations of North Indian cuisine."
+
+Chef Ananya Rao
+Pastry Chef
+
+"Creates contemporary desserts inspired by Indian flavours."
+
+Chef Kabir Singh
+Sous Chef
+
+"Specializes in tandoor and traditional Indian grilling."
+
+Each profile should include:
+
+Chef image
+Name
+Role
+Speciality
+Short biography
+Signature dish
+
+Example:
+
+Chef Aarav Mehta
+
+Signature:
+
+Butter Chicken with Charred Garlic Naan
+
+==================================================
+15. CHEF'S SPECIAL
+==================
+
+Create a highlighted section:
+
+CHEF'S SPECIAL
+
+Feature 3–5 dishes.
+
+Example:
+
+Chef Aarav's
+Signature Butter Chicken
+
+₹480
+
+"Slow-cooked tomato gravy, smoked spices and charcoal-finished chicken."
+
+CTA:
+
+"Add to My Reservation"
+
+==================================================
+16. RESTAURANT STORY
+====================
+
+Create an "Our Story" section.
+
+Focus on:
+
+Indian flavours
+Modern dining
+Hospitality
+Fresh ingredients
+Chef craftsmanship
+
+Avoid making unverifiable historical claims.
+
+==================================================
+17. INTERACTIVE DINING EXPERIENCE
+=================================
+
+Add subtle interactive elements.
+
+Examples:
+
+Hover over dish → image/description animation
+
+Hover over chef → chef profile expansion
+
+Select table → animated table highlight
+
+Add food → cart animation
+
+Reservation confirmed → elegant success animation
+
+Use smooth transitions.
+
+Avoid excessive animation.
+
+==================================================
+18. RESTAURANT CHATBOT
+======================
+
+Create an inbuilt assistant:
+
+"KEEPY"
+
+Keepy is the restaurant's virtual dining assistant.
+
+Floating button:
+
+Ask Keepy
+
+Keepy can answer:
+
+* What dishes do you recommend?
+* What vegetarian dishes are available?
+* What are today's specials?
+* How do I reserve a table?
+* What tables are available?
+* What time does the restaurant open?
+* What is the price of a dish?
+* Can I add food to my reservation?
+* What are my upcoming reservations?
+
+Give the chatbot access to current menu and reservation context.
+
+If an AI API is unavailable:
+
+Create a robust mock assistant with predefined responses.
+
+Never expose API keys in frontend code.
+
+==================================================
+19. MY RESERVATIONS
+===================
+
+Create a customer dashboard.
+
+Show:
+
+Upcoming Reservations
+Past Reservations
+Cancelled Reservations
+
+Reservation card:
+
+KEEP DIVING
+
+Date
+Time
+Guests
+Table
+Food pre-order
+Status
+
+Actions:
+
+View
+Modify
+Cancel
+Add Food
+
+==================================================
+20. RESERVATION CONFIRMATION
+============================
+
+After booking show:
+
+"Your table is reserved!"
+
+Display:
+
+Reservation ID
+Date
+Time
+Guests
+Table
+Restaurant
+Food pre-order
+
+Create:
+
+"Add to Calendar"
+
+"View Reservation"
+
+"Add More Food"
+
+"Share Reservation"
+
+==================================================
+21. RESERVATION STATUS
+======================
+
+Reservation states:
+
+PENDING
+CONFIRMED
+SEATED
+COMPLETED
+CANCELLED
+
+Use badges and appropriate UI.
+
+==================================================
+22. CUSTOMER ACCOUNT
+====================
+
+Create:
+
+Profile
+Saved preferences
+Reservation history
+Favorite dishes
+Food preferences
+
+Allow:
+
+Vegetarian preference
+Spice preference
+Allergy notes
+
+Add an appropriate disclaimer that allergy information should always be confirmed directly with restaurant staff.
+
+==================================================
+23. ADMIN DASHBOARD
+===================
+
+Create an admin dashboard.
+
+Admin can manage:
+
+Reservations
+Tables
+Menu
+Dishes
+Chefs
+Customers
+Orders
+
+Dashboard metrics:
+
+Today's reservations
+Upcoming reservations
+Tables occupied
+Tables available
+Food orders
+Revenue
+
+Create visual charts where appropriate.
+
+==================================================
+24. RESERVATION MANAGEMENT
+==========================
+
+Admin should see:
+
+Calendar view
+
+Time
+Table
+Guest count
+Customer
+Status
+
+Allow:
+
+Confirm
+Cancel
+Mark seated
+Mark completed
+
+==================================================
+25. DATABASE
+============
+
+If a database already exists:
+
+Inspect and extend it rather than replacing it.
+
+Create appropriate models for:
+
+User
+Restaurant
+Table
+TableReservation
+MenuCategory
+MenuItem
+Chef
+FoodOrder
+FoodOrderItem
+ReservationItem
+Notification
+
+Include timestamps.
+
+Relationships must be properly implemented.
+
+==================================================
+26. BACKEND
+===========
+
+Implement real API endpoints.
+
+Examples:
+
+GET /api/menu
+GET /api/menu/categories
+GET /api/menu/:id
+
+GET /api/tables/availability
+GET /api/tables
+
+POST /api/reservations
+GET /api/reservations
+GET /api/reservations/:id
+PATCH /api/reservations/:id
+DELETE /api/reservations/:id
+
+POST /api/orders
+GET /api/orders/:id
+
+GET /api/chefs
+
+POST /api/chat
+
+Admin:
+
+GET /api/admin/reservations
+PATCH /api/admin/reservations/:id
+CRUD /api/admin/menu
+CRUD /api/admin/tables
+CRUD /api/admin/chefs
+
+Validate all incoming data.
+
+==================================================
+27. BOOKING CONFLICT PREVENTION
+===============================
+
+This is important.
+
+The backend must prevent two users from successfully reserving the same table for overlapping time periods.
+
+Do not rely only on frontend availability.
+
+Perform availability validation on the backend when creating the reservation.
+
+==================================================
+28. CART
+========
+
+Create a persistent cart during the reservation session.
+
+Show:
+
+Number of items
+Subtotal
+Total
+
+Desktop:
+
+Right-side cart drawer.
+
+Mobile:
+
+Bottom cart bar.
+
+==================================================
+29. NOTIFICATIONS
+=================
+
+Create notifications for:
+
+Reservation confirmed
+Reservation modified
+Reservation cancelled
+Food order received
+Food preparation reminder
+
+==================================================
+30. UI / UX
+===========
+
+Make the interface premium and interactive.
+
+Use:
+
+* Spacious layouts
+* Beautiful food imagery
+* Elegant typography
+* Clear CTAs
+* Soft shadows
+* Rounded cards
+* Subtle animations
+* Strong visual hierarchy
+
+Do not overcrowd the interface.
+
+==================================================
+31. MOBILE EXPERIENCE
+=====================
+
+The mobile experience is extremely important.
+
+Make:
+
+Reservation flow
+Table selection
+Menu
+Cart
+Checkout
+Chatbot
+
+all easy to use with one hand.
+
+Use sticky:
+
+"Reserve Table"
+
+and
+
+"View Cart"
+
+actions where appropriate.
+
+==================================================
+32. ACCESSIBILITY
+=================
+
+Implement:
+
+Semantic HTML
+Keyboard navigation
+ARIA labels
+Accessible forms
+Focus states
+Readable contrast
+
+==================================================
+33. IMAGE HANDLING
+==================
+
+Use high-quality restaurant and food imagery.
+
+Needed:
+
+Restaurant interior
+Indian dishes
+Chef portraits
+Dining tables
+Restaurant atmosphere
+Desserts
+Beverages
+
+Do not use unrelated imagery.
+
+If using external images, keep image URLs centralized.
+
+Use lazy loading.
+
+==================================================
+34. RESPONSIVE STATES
+=====================
+
+Create:
+
+Loading states
+Empty states
+Error states
+Success states
+
+Examples:
+
+"No tables available at this time."
+
+"No dishes match your search."
+
+"Your reservation has been confirmed."
+
+==================================================
+35. DEMO DATA
+=============
+
+Seed realistic demonstration data.
+
+Tables:
+
+T01
+T02
+T03
+T04
+T05
+T06
+T07
+T08
+T09
+T10
+
+Different capacities:
+
+2
+2
+4
+4
+4
+6
+6
+8
+8
+10
+
+Create menu categories and the Indian dishes specified above.
+
+Create the demo chefs.
+
+Create sample reservations.
+
+==================================================
+36. IMPORTANT — DO NOT BREAK EXISTING WEBSITE
+=============================================
+
+Before finalizing:
+
+Check all existing pages.
+
+Preserve:
+
+Existing navigation where appropriate
+Existing branding
+Existing assets that are useful
+Existing responsive behavior
+
+Do not remove existing functionality unless it conflicts directly with the new restaurant reservation concept.
+
+==================================================
+37. TESTING
+===========
+
+Test the complete user flow:
+
+Homepage
+→ Menu
+→ Reserve Table
+→ Date
+→ Time
+→ Guests
+→ Table selection
+→ Add food
+→ Reservation summary
+→ Confirmation
+→ My Reservations
+
+Also test:
+
+Menu search
+Menu filters
+Cart
+Food quantity
+Reservation cancellation
+Reservation modification
+Admin reservation management
+Mobile layout
+Chatbot
+
+Fix all runtime errors.
+
+Fix all TypeScript errors.
+
+Fix broken links.
+
+Fix console errors.
+
+Do not consider the work complete if buttons merely look functional but do nothing.
+
+==================================================
+38. FINAL PRODUCT EXPERIENCE
+============================
+
+The finished website should feel like:
+
+A premium Indian restaurant + modern reservation platform + interactive dining assistant.
+
+The primary user journey should be:
+
+DISCOVER
+↓
+EXPLORE MENU
+↓
+CHOOSE DATE
+↓
+CHOOSE TIME
+↓
+SELECT TABLE
+↓
+PRE-ORDER FOOD
+↓
+CONFIRM
+↓
+DINE
+
+Make the experience delightful, intuitive and visually polished.
+
+Most importantly:
+
+MODIFY THE EXISTING PROJECT.
+
+Do not create a separate unrelated application.

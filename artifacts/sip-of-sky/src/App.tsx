@@ -12,6 +12,7 @@ import Order from "@/pages/order";
 import Book from "@/pages/book";
 import Reviews from "@/pages/reviews";
 import Admin from "@/pages/admin";
+import Reservations from "@/pages/reservations";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ function Router() {
         <Route path="/order" component={Order} />
         <Route path="/book" component={Book} />
         <Route path="/reviews" component={Reviews} />
+        <Route path="/reservations" component={Reservations} />
         <Route path="/admin" component={Admin} />
         <Route component={NotFound} />
       </Switch>
@@ -33,7 +35,7 @@ function Router() {
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="system" storageKey="sip-theme">
+    <ThemeProvider defaultTheme="light" storageKey="keep-diving-theme">
       <QueryClientProvider client={queryClient}>
         <CartProvider>
           <TooltipProvider>

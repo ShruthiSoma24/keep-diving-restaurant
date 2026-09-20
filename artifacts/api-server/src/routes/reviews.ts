@@ -16,10 +16,10 @@ function formatReview(review: typeof reviewsTable.$inferSelect) {
 router.get("/reviews", async (req, res) => {
   try {
     const reviews = await db.select().from(reviewsTable).where(eq(reviewsTable.approved, true)).orderBy(reviewsTable.createdAt);
-    res.json(reviews.map(formatReview).reverse());
+    return res.json(reviews.map(formatReview).reverse());
   } catch (err) {
     req.log.error({ err }, "Failed to list reviews");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -39,10 +39,10 @@ router.post("/reviews", async (req, res) => {
       comment: body.comment,
       approved: true,
     }).returning();
-    res.status(201).json(formatReview(review));
+    return res.status(201).json(formatReview(review));
   } catch (err) {
     req.log.error({ err }, "Failed to submit review");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -60,10 +60,10 @@ router.get("/reviews/summary", async (req, res) => {
       twoStarCount: reviews.filter(r => r.rating === 2).length,
       oneStarCount: reviews.filter(r => r.rating === 1).length,
     };
-    res.json(summary);
+    return res.json(summary);
   } catch (err) {
     req.log.error({ err }, "Failed to get review summary");
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 

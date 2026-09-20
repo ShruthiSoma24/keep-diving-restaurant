@@ -1,308 +1,45 @@
-import React, { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
+import { Link } from "wouter";
+import { CalendarDays, Check, ChevronRight, Clock3, Coffee, Leaf, Mail, Phone, Sparkles, Users } from "lucide-react";
 import { useCreateBooking } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Link } from "wouter";
-import {
-  CheckCircle2, User, Mail, Phone, Calendar, Clock, Users, FileText, ArrowLeft
-} from "lucide-react";
+import { saveLocalReservation, formatDateLong } from "@/lib/keep-diving";
 import { toast } from "sonner";
 
-const bookingSchema = z.object({
-  customerName: z.string().min(2, "Name must be at least 2 characters"),
-  customerEmail: z.string().email("Please enter a valid email"),
-  customerPhone: z.string().min(7, "Please enter a valid phone number"),
-  date: z.string().min(1, "Please select a date"),
-  time: z.string().min(1, "Please select a time"),
-  partySize: z.coerce.number().min(1, "Party size must be at least 1").max(20, "Maximum party size is 20"),
-  specialRequests: z.string().optional(),
-});
-type BookingFormData = z.infer<typeof bookingSchema>;
+const schema = z.object({ customerName: z.string().min(2, "Please add your name"), customerEmail: z.string().email("Please enter a valid email"), customerPhone: z.string().min(7, "Please add a phone number"), date: z.string().min(1, "Choose a date"), time: z.string().min(1, "Choose a time"), partySize: z.coerce.number().min(1).max(20), specialRequests: z.string().optional() });
+type FormData = z.infer<typeof schema>;
+const times = ["18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30"];
+const tables = [{ id: "a", label: "Window 01", seats: 2, status: "available" }, { id: "b", label: "Window 02", seats: 4, status: "reserved" }, { id: "c", label: "Banquette", seats: 4, status: "available" }, { id: "d", label: "Chef's counter", seats: 2, status: "occupied" }, { id: "e", label: "Round 06", seats: 6, status: "available" }, { id: "f", label: "Terrace 08", seats: 8, status: "available" }];
 
-const TIME_SLOTS = [
-  "11:00", "11:30", "12:00", "12:30", "13:00", "13:30",
-  "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30"
-];
-
-function ConfirmationScreen({ booking }: {
-  booking: { id: number; customerName: string; date: string; time: string; partySize: number }
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5, type: "spring" }}
-      className="min-h-screen flex items-center justify-center px-4 py-16"
-    >
-      <div className="max-w-md w-full text-center">
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-          className="w-24 h-24 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-8"
-        >
-          <CheckCircle2 className="h-12 w-12 text-green-500" />
-        </motion.div>
-
-        <h1 className="font-serif text-3xl mb-3">Table Reserved!</h1>
-        <p className="text-muted-foreground mb-8">
-          We look forward to welcoming you, <strong>{booking.customerName}</strong>.
-        </p>
-
-        <div className="bg-muted/40 rounded-2xl p-6 mb-8 space-y-4">
-          <div className="flex items-center gap-3 text-left">
-            <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <span className="text-primary font-bold text-xs">#{booking.id}</span>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Booking Reference</p>
-              <p className="font-semibold">Booking #{booking.id}</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-3 gap-4 pt-2">
-            <div className="text-center">
-              <Calendar className="h-5 w-5 text-primary mx-auto mb-1" />
-              <p className="text-xs text-muted-foreground">Date</p>
-              <p className="text-sm font-semibold">{new Date(booking.date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}</p>
-            </div>
-            <div className="text-center">
-              <Clock className="h-5 w-5 text-primary mx-auto mb-1" />
-              <p className="text-xs text-muted-foreground">Time</p>
-              <p className="text-sm font-semibold">{booking.time}</p>
-            </div>
-            <div className="text-center">
-              <Users className="h-5 w-5 text-primary mx-auto mb-1" />
-              <p className="text-xs text-muted-foreground">Guests</p>
-              <p className="text-sm font-semibold">{booking.partySize}</p>
-            </div>
-          </div>
-        </div>
-
-        <p className="text-sm text-muted-foreground mb-8">
-          A confirmation email will be sent to you shortly. Please arrive 10 minutes before your reservation.
-        </p>
-
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Link href="/menu" className="flex-1">
-            <Button variant="outline" className="w-full rounded-full">View Menu</Button>
-          </Link>
-          <Link href="/" className="flex-1">
-            <Button className="w-full rounded-full">Go Home</Button>
-          </Link>
-        </div>
-      </div>
-    </motion.div>
-  );
+function Success({ booking }: { booking: { id: number; name: string; date: string; time: string; partySize: number; table: string } }) {
+  return <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-2xl px-4 py-20 text-center"><div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-accent/15 text-accent"><Check className="h-9 w-9" /></div><p className="eyebrow mt-8">It’s in the diary</p><h1 className="mt-3 text-6xl">See you soon,<br /><em className="text-primary">{booking.name.split(" ")[0]}.</em></h1><p className="mx-auto mt-5 max-w-md text-muted-foreground">We’ve held your table and sent the details to your inbox. Come as you are; we’ll take it from here.</p><div className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border text-left"><div className="bg-card p-5"><p className="eyebrow">When</p><p className="mt-2 font-serif text-2xl">{formatDateLong(booking.date)}</p><p className="text-sm text-muted-foreground">{booking.time} · {booking.partySize} guests</p></div><div className="bg-card p-5"><p className="eyebrow">Where</p><p className="mt-2 font-serif text-2xl">{booking.table}</p><p className="text-sm text-muted-foreground">Reference KD-{booking.id}</p></div></div><div className="mt-8 flex justify-center gap-3"><Link href="/menu" className="rounded-full border border-border px-5 py-3 text-sm font-bold hover:border-primary hover:text-primary">Pre-order food</Link><Link href="/reservations" className="rounded-full bg-primary px-5 py-3 text-sm font-bold text-primary-foreground">View my tables</Link></div></motion.div>;
 }
 
 export default function Book() {
   const createBooking = useCreateBooking();
-  const [confirmedBooking, setConfirmedBooking] = useState<{
-    id: number; customerName: string; date: string; time: string; partySize: number;
-  } | null>(null);
-
+  const [selectedTable, setSelectedTable] = useState("a");
+  const [preOrder, setPreOrder] = useState("Later, I’ll choose at the table");
+  const [success, setSuccess] = useState<{ id: number; name: string; date: string; time: string; partySize: number; table: string } | null>(null);
   const today = new Date().toISOString().split("T")[0];
-
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors, isSubmitting },
-  } = useForm<BookingFormData>({
-    resolver: zodResolver(bookingSchema),
-    defaultValues: { partySize: 2 }
-  });
-
+  const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm<FormData>({ resolver: zodResolver(schema), defaultValues: { partySize: 2 } });
   const selectedTime = watch("time");
-
-  const onSubmit = (data: BookingFormData) => {
-    return new Promise<void>((resolve) => {
-      createBooking.mutate(
-        {
-          data: {
-            customerName: data.customerName,
-            customerEmail: data.customerEmail,
-            customerPhone: data.customerPhone,
-            date: data.date,
-            time: data.time,
-            partySize: data.partySize,
-            specialRequests: data.specialRequests,
-          },
-        },
-        {
-          onSuccess: (booking) => {
-            toast.success("Table reserved successfully!");
-            setConfirmedBooking({
-              id: booking.id,
-              customerName: data.customerName,
-              date: data.date,
-              time: data.time,
-              partySize: data.partySize,
-            });
-            resolve();
-          },
-          onError: () => {
-            toast.error("Failed to reserve table. Please try again.");
-            resolve();
-          },
-        }
-      );
-    });
-  };
-
-  if (confirmedBooking) return <ConfirmationScreen booking={confirmedBooking} />;
-
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Hero */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-muted/40 to-background pt-16 pb-12 px-4">
-        <div className="container mx-auto max-w-2xl text-center">
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-            <h1 className="font-serif text-4xl md:text-5xl mb-3">Reserve a Table</h1>
-            <p className="text-muted-foreground text-lg">
-              Secure your spot above the skyline. We'll take care of the rest.
-            </p>
-          </motion.div>
-        </div>
-      </div>
-
-      <div className="container mx-auto max-w-2xl px-4 py-10">
-        <Link href="/">
-          <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
-            <ArrowLeft className="h-4 w-4" /> Back
-          </button>
-        </Link>
-
-        <motion.form
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          onSubmit={handleSubmit(onSubmit)}
-          className="space-y-6"
-        >
-          {/* Contact Info */}
-          <div className="bg-card border border-card-border rounded-2xl p-6 shadow-sm space-y-5">
-            <h2 className="font-serif text-xl">Contact Information</h2>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="customerName" className="flex items-center gap-1.5 text-sm">
-                <User className="h-3.5 w-3.5" /> Full Name
-              </Label>
-              <Input id="customerName" placeholder="Alexandra Chen" {...register("customerName")}
-                className={errors.customerName ? "border-destructive" : ""} />
-              {errors.customerName && <p className="text-xs text-destructive">{errors.customerName.message}</p>}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div className="space-y-1.5">
-                <Label htmlFor="customerEmail" className="flex items-center gap-1.5 text-sm">
-                  <Mail className="h-3.5 w-3.5" /> Email
-                </Label>
-                <Input id="customerEmail" type="email" placeholder="you@example.com" {...register("customerEmail")}
-                  className={errors.customerEmail ? "border-destructive" : ""} />
-                {errors.customerEmail && <p className="text-xs text-destructive">{errors.customerEmail.message}</p>}
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="customerPhone" className="flex items-center gap-1.5 text-sm">
-                  <Phone className="h-3.5 w-3.5" /> Phone
-                </Label>
-                <Input id="customerPhone" type="tel" placeholder="+1 (555) 000-0000" {...register("customerPhone")}
-                  className={errors.customerPhone ? "border-destructive" : ""} />
-                {errors.customerPhone && <p className="text-xs text-destructive">{errors.customerPhone.message}</p>}
-              </div>
-            </div>
-          </div>
-
-          {/* Reservation Details */}
-          <div className="bg-card border border-card-border rounded-2xl p-6 shadow-sm space-y-5">
-            <h2 className="font-serif text-xl">Reservation Details</h2>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div className="space-y-1.5">
-                <Label htmlFor="date" className="flex items-center gap-1.5 text-sm">
-                  <Calendar className="h-3.5 w-3.5" /> Date
-                </Label>
-                <Input id="date" type="date" min={today} {...register("date")}
-                  className={errors.date ? "border-destructive" : ""} />
-                {errors.date && <p className="text-xs text-destructive">{errors.date.message}</p>}
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="partySize" className="flex items-center gap-1.5 text-sm">
-                  <Users className="h-3.5 w-3.5" /> Number of Guests
-                </Label>
-                <Input id="partySize" type="number" min={1} max={20} {...register("partySize")}
-                  className={errors.partySize ? "border-destructive" : ""} />
-                {errors.partySize && <p className="text-xs text-destructive">{errors.partySize.message}</p>}
-              </div>
-            </div>
-
-            {/* Time Slots */}
-            <div className="space-y-2">
-              <Label className="flex items-center gap-1.5 text-sm">
-                <Clock className="h-3.5 w-3.5" /> Preferred Time
-              </Label>
-              <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
-                {TIME_SLOTS.map(slot => (
-                  <button
-                    key={slot}
-                    type="button"
-                    onClick={() => setValue("time", slot, { shouldValidate: true })}
-                    className={`px-2 py-2 rounded-xl text-xs font-medium transition-all duration-150 border ${
-                      selectedTime === slot
-                        ? "bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/25"
-                        : "bg-muted/50 text-foreground border-border/40 hover:border-primary/40 hover:bg-primary/5"
-                    }`}
-                  >
-                    {slot}
-                  </button>
-                ))}
-              </div>
-              {errors.time && <p className="text-xs text-destructive">{errors.time.message}</p>}
-            </div>
-          </div>
-
-          {/* Special Requests */}
-          <div className="bg-card border border-card-border rounded-2xl p-6 shadow-sm space-y-3">
-            <Label htmlFor="specialRequests" className="flex items-center gap-1.5 font-serif text-lg">
-              <FileText className="h-4 w-4" /> Special Requests
-              <span className="text-sm text-muted-foreground font-normal ml-1">(optional)</span>
-            </Label>
-            <Textarea id="specialRequests" rows={3}
-              placeholder="Anniversary celebration, dietary requirements, seating preferences..."
-              {...register("specialRequests")} />
-          </div>
-
-          <Button
-            type="submit"
-            disabled={isSubmitting || createBooking.isPending}
-            size="lg"
-            className="w-full rounded-full text-base py-6 gap-2 shadow-lg shadow-primary/20"
-          >
-            {isSubmitting || createBooking.isPending ? (
-              <span className="flex items-center gap-2">
-                <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Reserving...
-              </span>
-            ) : (
-              "Confirm Reservation"
-            )}
-          </Button>
-        </motion.form>
-
-        {/* Info Note */}
-        <p className="text-center text-sm text-muted-foreground mt-6">
-          Reservations are held for 15 minutes after the booked time. For groups of 10+, please call us directly.
-        </p>
-      </div>
-    </div>
-  );
+  const chosen = useMemo(() => tables.find((table) => table.id === selectedTable) || tables[0], [selectedTable]);
+  const onSubmit = (data: FormData) => new Promise<void>((resolve) => {
+    const requests = [data.specialRequests, `Table preference: ${chosen.label}`, `Pre-order: ${preOrder}`].filter(Boolean).join(" · ");
+    createBooking.mutate({ data: { ...data, specialRequests: requests } }, { onSuccess: (booking) => { saveLocalReservation({ id: booking.id, customerName: data.customerName, customerEmail: data.customerEmail, customerPhone: data.customerPhone, date: data.date, time: data.time, partySize: data.partySize, status: booking.status, tableName: chosen.label, preOrder, createdAt: booking.createdAt }); setSuccess({ id: booking.id, name: data.customerName, date: data.date, time: data.time, partySize: data.partySize, table: chosen.label }); toast.success("Your table is held."); resolve(); }, onError: () => { toast.error("We couldn’t hold that table. Try another time."); resolve(); } });
+  });
+  if (success) return <Success booking={success} />;
+  return <div className="bg-background"><section className="ink-panel px-4 py-14 sm:px-6"><div className="mx-auto max-w-7xl"><p className="eyebrow">A considered arrival</p><h1 className="mt-4 max-w-3xl text-6xl text-secondary-foreground sm:text-8xl">Choose your<br /><em className="text-primary">evening.</em></h1><p className="mt-5 max-w-lg text-secondary-foreground/65">Date, time, a view of the city — the small details are where the evening begins.</p></div></section><main className="mx-auto max-w-7xl px-4 py-10 sm:px-6"><form onSubmit={handleSubmit(onSubmit)}><div className="grid gap-8 lg:grid-cols-[1fr_360px]"><div className="space-y-8">
+    <section className="rounded-2xl border border-card-border bg-card p-6 shadow-sm"><div className="mb-6 flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/15 text-primary font-mono text-sm">01</span><div><h2 className="font-serif text-2xl">Your details</h2><p className="text-sm text-muted-foreground">So we know who to welcome.</p></div></div><div className="grid gap-5 sm:grid-cols-2"><div className="space-y-1.5 sm:col-span-2"><Label htmlFor="customerName">Full name</Label><Input id="customerName" data-testid="input-booking-name" placeholder="Aarav Mehta" {...register("customerName")} />{errors.customerName && <p className="text-xs text-destructive">{errors.customerName.message}</p>}</div><div className="space-y-1.5"><Label htmlFor="customerEmail"><Mail className="mr-1 inline h-3.5 w-3.5" />Email</Label><Input id="customerEmail" type="email" placeholder="you@example.com" {...register("customerEmail")} />{errors.customerEmail && <p className="text-xs text-destructive">{errors.customerEmail.message}</p>}</div><div className="space-y-1.5"><Label htmlFor="customerPhone"><Phone className="mr-1 inline h-3.5 w-3.5" />Phone</Label><Input id="customerPhone" type="tel" placeholder="+91 98 0000 0000" {...register("customerPhone")} />{errors.customerPhone && <p className="text-xs text-destructive">{errors.customerPhone.message}</p>}</div></div></section>
+    <section className="rounded-2xl border border-card-border bg-card p-6 shadow-sm"><div className="mb-6 flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/15 text-primary font-mono text-sm">02</span><div><h2 className="font-serif text-2xl">When will you dive in?</h2><p className="text-sm text-muted-foreground">Dinner service is intimate by design.</p></div></div><div className="grid gap-5 sm:grid-cols-2"><div className="space-y-1.5"><Label htmlFor="date"><CalendarDays className="mr-1 inline h-3.5 w-3.5" />Date</Label><Input id="date" type="date" min={today} {...register("date")} />{errors.date && <p className="text-xs text-destructive">{errors.date.message}</p>}</div><div className="space-y-1.5"><Label htmlFor="partySize"><Users className="mr-1 inline h-3.5 w-3.5" />Guests</Label><Input id="partySize" type="number" min="1" max="20" {...register("partySize")} /></div></div><div className="mt-6"><Label><Clock3 className="mr-1 inline h-3.5 w-3.5" />Time</Label><div className="mt-2 grid grid-cols-4 gap-2 sm:grid-cols-8">{times.map((time) => <button type="button" data-testid={`button-time-${time}`} key={time} onClick={() => setValue("time", time, { shouldValidate: true })} className={`rounded-xl border py-2.5 text-xs font-bold transition-colors ${selectedTime === time ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background hover:border-primary/60"}`}>{time}</button>)}</div>{errors.time && <p className="mt-2 text-xs text-destructive">{errors.time.message}</p>}</div></section>
+    <section className="rounded-2xl border border-card-border bg-card p-6 shadow-sm"><div className="mb-6 flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/15 text-primary font-mono text-sm">03</span><div><h2 className="font-serif text-2xl">Pick a point of view</h2><p className="text-sm text-muted-foreground">Illustrative seating; our host will confirm on arrival.</p></div></div><div className="relative mx-auto max-w-xl rounded-2xl border border-border bg-muted/35 p-5"><div className="mb-5 rounded-xl border border-dashed border-primary/35 py-3 text-center font-mono text-[.65rem] uppercase tracking-[.2em] text-primary">City-facing windows</div><div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{tables.map((table) => { const disabled = table.status !== "available"; return <button type="button" key={table.id} disabled={disabled} onClick={() => setSelectedTable(table.id)} className={`relative rounded-xl border p-4 text-left transition-all ${selectedTable === table.id ? "border-primary bg-primary/15 ring-2 ring-primary/25" : disabled ? "cursor-not-allowed border-border/60 bg-muted text-muted-foreground/50" : "border-border bg-card hover:-translate-y-0.5 hover:border-primary/60"}`}><div className={`mb-5 h-7 w-7 rounded-full border-2 ${selectedTable === table.id ? "border-primary bg-primary" : disabled ? "border-muted-foreground/20" : "border-accent/60"}`} /> <p className="text-sm font-bold">{table.label}</p><p className="mt-1 text-xs text-muted-foreground">{disabled ? table.status : `${table.seats} seats`}</p>{selectedTable === table.id && <Check className="absolute right-3 top-3 h-4 w-4 text-primary" />}</button>; })}</div><div className="mt-5 flex flex-wrap gap-4 text-xs text-muted-foreground"><span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-accent" />Available</span><span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-primary" />Selected</span><span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-muted-foreground/30" />Occupied</span></div></div></section>
+    <section className="rounded-2xl border border-card-border bg-card p-6 shadow-sm"><div className="mb-5 flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/15 text-primary"><Sparkles className="h-4 w-4" /></span><div><h2 className="font-serif text-2xl">Begin with a bite?</h2><p className="text-sm text-muted-foreground">Optional pre-order, ready when you arrive.</p></div></div><div className="grid gap-2 sm:grid-cols-3">{["Later, I’ll choose at the table", "Aperitif & papad", "Chef’s first course"].map((choice) => <button type="button" key={choice} onClick={() => setPreOrder(choice)} className={`rounded-xl border px-3 py-3 text-left text-sm font-semibold ${preOrder === choice ? "border-primary bg-primary/10 text-primary" : "border-border hover:border-primary/50"}`}>{choice}</button>)}</div><div className="mt-5"><Label htmlFor="specialRequests">Anything we should know?</Label><Textarea id="specialRequests" rows={3} className="mt-2" placeholder="A birthday, dietary note, or the kind of evening you’re after..." {...register("specialRequests")} /></div></section>
+  </div><aside className="lg:sticky lg:top-24 lg:h-fit"><div className="ink-panel rounded-2xl p-6 shadow-xl"><p className="eyebrow">Your evening</p><h2 className="mt-3 font-serif text-3xl text-secondary-foreground">A table is<br /><em className="text-primary">almost yours.</em></h2><div className="my-6 space-y-4 border-y border-secondary-foreground/10 py-5 text-sm text-secondary-foreground/70"><p className="flex gap-3"><CalendarDays className="h-4 w-4 text-primary" />{watch("date") ? formatDateLong(watch("date")) : "Choose a date"}</p><p className="flex gap-3"><Clock3 className="h-4 w-4 text-primary" />{selectedTime || "Choose a time"}</p><p className="flex gap-3"><Users className="h-4 w-4 text-primary" />{watch("partySize") || 2} guests · {chosen.label}</p><p className="flex gap-3"><Coffee className="h-4 w-4 text-primary" />{preOrder}</p></div><Button type="submit" disabled={isSubmitting || createBooking.isPending} data-testid="button-confirm-reservation" className="w-full rounded-full py-6 text-base font-extrabold">{createBooking.isPending ? "Holding your table…" : "Hold this table"}<ChevronRight className="ml-2 h-4 w-4" /></Button><p className="mt-4 text-center text-xs text-secondary-foreground/45">Held for 15 minutes · Groups of 10+ call us</p></div></aside></div></form></main></div>;
 }

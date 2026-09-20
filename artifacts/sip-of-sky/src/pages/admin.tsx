@@ -31,6 +31,7 @@ import {
   TrendingUp, Package, Clock, CheckCircle2, XCircle, Leaf, Flame
 } from "lucide-react";
 import { toast } from "sonner";
+import { formatINR } from "@/lib/keep-diving";
 
 const menuItemSchema = z.object({
   name: z.string().min(2, "Required"),
@@ -94,7 +95,7 @@ function MenuItemForm({ item, onClose }: { item?: MenuItemFormData & { id?: numb
       const payload = { ...data, imageUrl: data.imageUrl || undefined };
       if (isEdit && item?.id) {
         update.mutate(
-          { params: { id: item.id }, data: payload },
+           { id: item.id, data: payload },
           {
             onSuccess: () => {
               toast.success("Menu item updated");
@@ -138,7 +139,7 @@ function MenuItemForm({ item, onClose }: { item?: MenuItemFormData & { id?: numb
         </div>
 
         <div className="space-y-1">
-          <Label className="text-xs">Price ($)</Label>
+           <Label className="text-xs">Price (₹)</Label>
           <Input type="number" step="0.01" placeholder="18.00" {...register("price")} className={errors.price ? "border-destructive" : ""} />
           {errors.price && <p className="text-xs text-destructive">{errors.price.message}</p>}
         </div>
@@ -151,7 +152,7 @@ function MenuItemForm({ item, onClose }: { item?: MenuItemFormData & { id?: numb
 
         <div className="col-span-2 space-y-1">
           <Label className="text-xs">Image URL (optional)</Label>
-          <Input placeholder="https://images.unsplash.com/..." {...register("imageUrl")} />
+           <Input placeholder="https://your-image-host.com/dish.jpg" {...register("imageUrl")} />
           {errors.imageUrl && <p className="text-xs text-destructive">{errors.imageUrl.message}</p>}
         </div>
       </div>
@@ -201,7 +202,7 @@ function MenuTab() {
   const handleDelete = (id: number, name: string) => {
     if (!confirm(`Delete "${name}"?`)) return;
     deleteItem.mutate(
-      { params: { id } },
+       { id },
       {
         onSuccess: () => { toast.success("Deleted"); qc.invalidateQueries({ queryKey: getListMenuItemsQueryKey() }); },
         onError: () => toast.error("Failed to delete"),
@@ -247,7 +248,7 @@ function MenuTab() {
                 <TableRow key={item.id}>
                   <TableCell className="font-medium">{item.name}</TableCell>
                   <TableCell className="text-muted-foreground text-sm">{item.category}</TableCell>
-                  <TableCell className="font-semibold text-primary">${item.price.toFixed(2)}</TableCell>
+                  <TableCell className="font-semibold text-primary">{formatINR(item.price)}</TableCell>
                   <TableCell>
                     <div className="flex gap-1">
                       {item.isVegetarian && <span className="h-5 w-5 rounded-full bg-green-500/15 flex items-center justify-center" title="Vegetarian"><Leaf className="h-3 w-3 text-green-600" /></span>}
@@ -296,7 +297,7 @@ function OrdersTab() {
 
   const handleStatusChange = (id: number, status: string) => {
     updateStatus.mutate(
-      { params: { id }, data: { status: status as OrderStatus } },
+       { id, data: { status: status as OrderStatus } },
       {
         onSuccess: () => {
           toast.success("Order updated");
@@ -313,7 +314,7 @@ function OrdersTab() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard icon={<ShoppingBag className="h-4 w-4" />} label="Total Orders" value={stats?.totalOrders ?? "—"} />
-        <StatCard icon={<TrendingUp className="h-4 w-4" />} label="Total Revenue" value={stats ? `$${stats.totalRevenue.toFixed(2)}` : "—"} />
+        <StatCard icon={<TrendingUp className="h-4 w-4" />} label="Total Revenue" value={stats ? formatINR(stats.totalRevenue) : "—"} />
         <StatCard icon={<Clock className="h-4 w-4" />} label="Pending" value={stats?.pendingOrders ?? "—"} />
         <StatCard icon={<Package className="h-4 w-4" />} label="Preparing" value={stats?.preparingOrders ?? "—"} />
       </div>
@@ -356,7 +357,7 @@ function OrdersTab() {
                         {(order.items as { name: string; quantity: number }[]).map(i => `${i.name} ×${i.quantity}`).join(", ").substring(0, 40)}
                         {(order.items as unknown[]).length > 2 ? "..." : ""}
                       </TableCell>
-                      <TableCell className="font-semibold text-primary">${order.totalAmount.toFixed(2)}</TableCell>
+                      <TableCell className="font-semibold text-primary">{formatINR(order.totalAmount)}</TableCell>
                       <TableCell className="text-xs text-muted-foreground">
                         {new Date(order.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
                       </TableCell>
@@ -391,7 +392,7 @@ function BookingsTab() {
 
   const handleStatusChange = (id: number, status: string) => {
     updateStatus.mutate(
-      { params: { id }, data: { status: status as BookingStatus } },
+       { id, data: { status: status as BookingStatus } },
       {
         onSuccess: () => {
           toast.success("Booking updated");
